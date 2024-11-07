@@ -1,0 +1,23 @@
+@relation “student”
+@attribute cost {1000, 3000, 4000, 5000, 6000, 7000, 8000}
+@attribute locality {delhi, mumbai, chennai}
+@attribute industry {CMPN, INFT, EXTC}
+@attribute buycomputer {True, False}
+
+@data
+1000, delhi, CMPN, True
+3000, mumbai, INFT, True
+4000, delhi, EXTC, True
+4000, mumbai, CMPN, True
+5000, mumbai, CMPN, True
+5000, mumbai, INFT, True
+7000, mumbai, CMPN, True
+8000, mumbai, CMPN, True
+3000, mumbai, CMPN, False
+6000, delhi, INFT, False
+6000, delhi, CMPN, False
+7000, mumbai, INFT, False
+8000, chennai, INFT, False
+8000, chennai, EXTC, False
+
+save it as student_details.arff
