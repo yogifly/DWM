@@ -1,0 +1,114 @@
+create table doctor(DoctorID int primary key, DoctorName varchar(10), speciality varchar(10), Gender varchar(10),experience int);
+create table patient(PatientID int primary key, PatientName varchar(10), Age int, Gender varchar(10),MedicalHistory varchar(20));
+create table promotion_dimensiontable(offer_key int primary key ,offer_name varchar(20), offer_start_date date, offer_end_date date, discount int, coupon varchar(20));
+create table product_dimensiontable(product_key int primary key ,product_name varchar(20), product_mfd date, product_exp date, product_cat varchar(20));
+create table store_dimensiontable(store_key int primary key ,store_name varchar(20), city varchar(20), zip int, branch varchar(20));
+create table time_dimensiontable(time_key int primary key , time_zone varchar(20), hour int, month varchar(20), week_no int);
+
+CREATE TABLE hypermarket_facttable (
+    time_key INT,
+    store_key INT,
+    product_key INT,
+    offer_key INT,
+    NumProd INT,
+    price_cap INT,
+    NumStore INT,
+    profit INT,
+    FOREIGN KEY (time_key) REFERENCES time_dimensiontable(time_key),
+    FOREIGN KEY (store_key) REFERENCES store_dimensiontable(store_key),
+    FOREIGN KEY (product_key) REFERENCES product_dimensiontable(product_key),
+    FOREIGN KEY (offer_key) REFERENCES promotion_dimensiontable(offer_key)
+);
+
+-- Inserting data into time_dimensiontable
+INSERT INTO time_dimensiontable (time_key, time_zone, hour, month, week_no) VALUES (1, 'EST', 9, 'January', 1);
+INSERT INTO time_dimensiontable (time_key, time_zone, hour, month, week_no) VALUES (2, 'EST', 10, 'January', 2);
+INSERT INTO time_dimensiontable (time_key, time_zone, hour, month, week_no) VALUES (3, 'PST', 11, 'February', 5);
+INSERT INTO time_dimensiontable (time_key, time_zone, hour, month, week_no) VALUES (4, 'CST', 14, 'March', 9);
+INSERT INTO time_dimensiontable (time_key, time_zone, hour, month, week_no) VALUES (5, 'MST', 16, 'April', 13);
+
+-- Inserting data into store_dimensiontable
+INSERT INTO store_dimensiontable (store_key, store_name, city, zip, branch) VALUES (1, 'Store A', 'New York', 10001, 'Branch 1');
+INSERT INTO store_dimensiontable (store_key, store_name, city, zip, branch) VALUES (2, 'Store B', 'Los Angeles', 90001, 'Branch 2');
+INSERT INTO store_dimensiontable (store_key, store_name, city, zip, branch) VALUES (3, 'Store C', 'Chicago', 60601, 'Branch 3');
+INSERT INTO store_dimensiontable (store_key, store_name, city, zip, branch) VALUES (4, 'Store D', 'Houston', 77001, 'Branch 4');
+INSERT INTO store_dimensiontable (store_key, store_name, city, zip, branch) VALUES (5, 'Store E', 'Phoenix', 85001, 'Branch 5');
+
+-- Inserting data into product_dimensiontable with date format in single quotes
+INSERT INTO product_dimensiontable (product_key, product_name, product_mfd, product_exp, product_cat) 
+VALUES (1, 'Laptop', '2023-01-15', '2025-01-15', 'Electronics');
+INSERT INTO product_dimensiontable (product_key, product_name, product_mfd, product_exp, product_cat) 
+VALUES (2, 'Phone', '2023-03-01', '2024-03-01', 'Electronics');
+INSERT INTO product_dimensiontable (product_key, product_name, product_mfd, product_exp, product_cat) 
+VALUES (3, 'Shoes', '2023-05-20', '2025-05-20', 'Footwear');
+INSERT INTO product_dimensiontable (product_key, product_name, product_mfd, product_exp, product_cat) 
+VALUES (4, 'Watch', '2023-06-10', '2026-06-10', 'Accessories');
+INSERT INTO product_dimensiontable (product_key, product_name, product_mfd, product_exp, product_cat) 
+VALUES (5, 'Bag', '2023-07-15', '2025-07-15', 'Accessories');
+
+-- Inserting data into promotion_dimensiontable with date format in single quotes
+INSERT INTO promotion_dimensiontable (offer_key, offer_name, offer_start_date, offer_end_date, discount, coupon) 
+VALUES (1, 'Winter Sale', '2024-01-01', '2024-01-31', 20, 'WINTER20');
+INSERT INTO promotion_dimensiontable (offer_key, offer_name, offer_start_date, offer_end_date, discount, coupon) 
+VALUES (2, 'Spring Deal', '2024-03-01', '2024-03-31', 15, 'SPRING15');
+INSERT INTO promotion_dimensiontable (offer_key, offer_name, offer_start_date, offer_end_date, discount, coupon) 
+VALUES (3, 'Summer Special', '2024-06-01', '2024-06-30', 25, 'SUMMER25');
+INSERT INTO promotion_dimensiontable (offer_key, offer_name, offer_start_date, offer_end_date, discount, coupon) 
+VALUES (4, 'Fall Frenzy', '2024-09-01', '2024-09-30', 10, 'FALL10');
+
+-- Inserting data into hypermarket_facttable
+INSERT INTO hypermarket_facttable (time_key, store_key, product_key, offer_key, NumProd, price_cap, NumStore, profit) 
+VALUES (1, 1, 1, 1, 50, 1000, 1, 20000);
+INSERT INTO hypermarket_facttable (time_key, store_key, product_key, offer_key, NumProd, price_cap, NumStore, profit) 
+VALUES (2, 2, 2, 2, 30, 500, 1, 10000);
+INSERT INTO hypermarket_facttable (time_key, store_key, product_key, offer_key, NumProd, price_cap, NumStore, profit) 
+VALUES (3, 3, 3, 1, 20, 150, 2, 5000);
+INSERT INTO hypermarket_facttable (time_key, store_key, product_key, offer_key, NumProd, price_cap, NumStore, profit) 
+VALUES (4, 4, 4, 3, 10, 200, 3, 10000);
+INSERT INTO hypermarket_facttable (time_key, store_key, product_key, offer_key, NumProd, price_cap, NumStore, profit) 
+VALUES (5, 5, 5, 4, 15, 250, 2, 3750);
+
+SELECT s.store_name, 
+       SUM(h.NumProd * h.price_cap) AS Total_Sales, 
+       SUM(h.profit) AS Total_Profit
+FROM hypermarket_facttable h
+JOIN store_dimensiontable s ON h.store_key = s.store_key
+GROUP BY s.store_name;
+
+SELECT t.month, 
+       SUM(h.NumProd * h.price_cap) AS Total_Sales
+FROM hypermarket_facttable h
+JOIN time_dimensiontable t ON h.time_key = t.time_key
+GROUP BY t.month
+ORDER BY t.month;
+
+SELECT p.product_cat, 
+       SUM(h.profit) AS Total_Profit
+FROM hypermarket_facttable h
+JOIN product_dimensiontable p ON h.product_key = p.product_key
+GROUP BY p.product_cat;
+
+SELECT pr.offer_name, 
+       SUM(h.NumProd * h.price_cap) AS Total_Sales, 
+       SUM(h.profit) AS Total_Profit
+FROM hypermarket_facttable h
+JOIN promotion_dimensiontable pr ON h.offer_key = pr.offer_key
+GROUP BY pr.offer_name;
+
+SELECT t.time_zone, 
+       SUM(h.NumProd * h.price_cap) AS Total_Sales, 
+       SUM(h.profit) AS Total_Profit
+FROM hypermarket_facttable h
+JOIN time_dimensiontable t ON h.time_key = t.time_key
+GROUP BY t.time_zone;
+
+SELECT s.store_name, 
+       p.product_cat, 
+       AVG(h.profit) AS Avg_Profit_Per_Category
+FROM hypermarket_facttable h
+JOIN store_dimensiontable s ON h.store_key = s.store_key
+JOIN product_dimensiontable p ON h.product_key = p.product_key
+GROUP BY s.store_name, p.product_cat
+ORDER BY s.store_name, p.product_cat;
+
+

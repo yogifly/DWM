@@ -1,0 +1,100 @@
+create table doctor(DoctorID int primary key , DoctorName varchar(10),speciality varchar(10), Gender Varchar(10), Experience int);
+
+create table patient(PatientID int primary key, PatientName varchar(10), Age int, Gender varchar(10),MedicalHistory varchar(20));
+
+create table Admin(AdminID int primary key ,AdminName varchar(10), Role varchar(10),Gender varchar(10), Department varchar(10));
+
+CREATE TABLE Medical_Records(
+       MedicalRecordID INT PRIMARY KEY,
+       Diagnosis varchar(20),
+       Treatment varchar(20),
+       Medication varchar(20),
+       DoctorID int,
+       PatientID int,
+       FOREIGN KEY (DoctorID) REFERENCES doctor(DoctorID),
+       FOREIGN KEY (PatientID) REFERENCES patient(PatientID)
+   );
+
+CREATE TABLE HospitalVisits (
+        VisitID INT PRIMARY KEY,
+        DoctorID INT,
+        PatientID INT,
+        MedicalRecordID INT,
+        AdminID INT,
+        VisitDate DATE,
+        Duration INT,
+        Cost DECIMAL(10, 2),
+       FOREIGN KEY (DoctorID) REFERENCES doctor(DoctorID),
+       FOREIGN KEY (PatientID) REFERENCES patient(PatientID),
+       FOREIGN KEY (MedicalRecordID) REFERENCES Medical_Records(MedicalRecordID),
+       FOREIGN KEY (AdminID) REFERENCES Admin(AdminID)
+);
+
+INSERT INTO doctor (DoctorID, DoctorName, speciality, Gender, experience) VALUES (1, 'Smith', 'Cardio', 'Male', 10);
+INSERT INTO doctor (DoctorID, DoctorName, speciality, Gender, experience) VALUES (2, 'Johnson', 'Neuro', 'Female', 8);
+INSERT INTO doctor (DoctorID, DoctorName, speciality, Gender, experience) VALUES (3, 'Williams', 'Ortho', 'Male', 12);
+INSERT INTO doctor (DoctorID, DoctorName, speciality, Gender, experience) VALUES (4, 'Brown', 'Pedia', 'Female', 7);
+INSERT INTO doctor (DoctorID, DoctorName, speciality, Gender, experience) VALUES (5, 'Davis', 'Derma', 'Non-binary', 5);
+
+
+INSERT INTO patient (PatientID, PatientName, Age, Gender, MedicalHistory) VALUES (1, 'Alice', 30, 'Female', 'Diabet');
+INSERT INTO patient (PatientID, PatientName, Age, Gender, MedicalHistory) VALUES (2, 'Bob', 45, 'Male', 'Hyperten');
+INSERT INTO patient (PatientID, PatientName, Age, Gender, MedicalHistory) VALUES (3, 'Charlie', 25, 'Non-binary', 'Asthma');
+INSERT INTO patient (PatientID, PatientName, Age, Gender, MedicalHistory) VALUES (4, 'Diana', 40, 'Female', 'Allergy');
+INSERT INTO patient (PatientID, PatientName, Age, Gender, MedicalHistory) VALUES (5, 'Ethan', 35, 'Male', 'Cholest');
+
+
+INSERT INTO Admin (AdminID, AdminName, Role, Gender, Department) VALUES (1, 'Mary', 'Recept', 'Female', 'Front');
+INSERT INTO Admin (AdminID, AdminName, Role, Gender, Department) VALUES (2, 'John', 'Sec', 'Male', 'Secu');
+INSERT INTO Admin (AdminID, AdminName, Role, Gender, Department) VALUES (3, 'Lisa', 'Billing', 'Female', 'Bill');
+INSERT INTO Admin (AdminID, AdminName, Role, Gender, Department) VALUES (4, 'Steve', 'IT Sup', 'Male', 'IT');
+INSERT INTO Admin (AdminID, AdminName, Role, Gender, Department) VALUES (5, 'Emma', 'Sched', 'Female', 'Sched');
+
+
+INSERT INTO Medical_Records (MedicalRecordID, Diagnosis, Treatment, Medication, DoctorID, PatientID) VALUES
+(1, 'Flu', 'Rest', 'Paracet', 1, 1);
+INSERT INTO Medical_Records (MedicalRecordID, Diagnosis, Treatment, Medication, DoctorID, PatientID) VALUES
+(2, 'Fracture', 'Cast', 'Painkill', 3, 2);
+INSERT INTO Medical_Records (MedicalRecordID, Diagnosis, Treatment, Medication, DoctorID, PatientID) VALUES
+(3, 'Migraine', 'Med', 'Ibuprofen', 2, 3);
+INSERT INTO Medical_Records (MedicalRecordID, Diagnosis, Treatment, Medication, DoctorID, PatientID) VALUES
+(4, 'Rash', 'Cream', 'Antihist', 5, 4);
+INSERT INTO Medical_Records (MedicalRecordID, Diagnosis, Treatment, Medication, DoctorID, PatientID) VALUES
+(5, 'BP High', 'Diet', 'Lisinop', 2, 5);
+
+
+
+INSERT INTO HospitalVisits (VisitID, DoctorID, PatientID, MedicalRecordID, AdminID, VisitDate, Duration, Cost) VALUES
+(1, 1, 1, 1, 1, 2024-07-01, 30, 100.00);
+INSERT INTO HospitalVisits (VisitID, DoctorID, PatientID, MedicalRecordID, AdminID, VisitDate, Duration, Cost) VALUES
+(2, 3, 2, 2, 2, 2024-07-02, 45, 200.00);
+INSERT INTO HospitalVisits (VisitID, DoctorID, PatientID, MedicalRecordID, AdminID, VisitDate, Duration, Cost) VALUES
+(3, 2, 3, 3, 3, 2024-07-03, 20, 150.00);
+INSERT INTO HospitalVisits (VisitID, DoctorID, PatientID, MedicalRecordID, AdminID, VisitDate, Duration, Cost) VALUES
+(4, 5, 4, 4, 4, 2024-07-04, 25, 120.00);
+INSERT INTO HospitalVisits (VisitID, DoctorID, PatientID, MedicalRecordID, AdminID, VisitDate, Duration, Cost) VALUES
+(5, 2, 5, 5, 5, 2024-07-05, 40, 180.00);
+
+--1. How many hospital visits were recorded in the fact table?
+SELECT COUNT(*) AS TotalVisits FROM HospitalVisits;
+
+--2. What is the total cost of all visits recorded in the fact table?
+SELECT SUM(Cost) AS TotalCost FROM HospitalVisits;
+
+--3. How many unique patients visited the hospital?
+SELECT COUNT(DISTINCT PatientID) AS UniquePatients FROM HospitalVisits;
+
+--4. List all the doctors along with their specialties. list
+SELECT DoctorName, speciality FROM doctor;
+
+--5. What is the average duration of hospital visits?
+SELECT AVG(Duration) AS AverageDuration FROM HospitalVisits;
+
+--6. Show the total cost of visits for each doctor's specialty, with a grand total for all specialties combined
+SELECT speciality, SUM(Cost) AS TotalCost
+   FROM HospitalVisits
+   JOIN doctor ON HospitalVisits.DoctorID = doctor.DoctorID
+   GROUP BY speciality
+   UNION ALL
+   SELECT 'Grand Total', SUM(Cost)
+   FROM HospitalVisits;
